@@ -28,7 +28,7 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 		contactHandler(w, r)
 	default:
 		//pageNotFoundHandler(w, r)
-		http.Error(w, "Page not found: "+r.URL.Path, http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
 	}
 }
 
