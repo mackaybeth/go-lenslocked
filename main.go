@@ -46,9 +46,10 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 // }
 
 func main() {
-	var router http.HandlerFunc
-	// This works because pathHandler matches the underlying type for http.HandlerFunc
-	router = pathHandler
+	// http.Handler - interface with the ServeHTTP method
+	// http.HandlerFunc - a *function* that accepts the same args as ServeHTTP method, and ALSO implements http.Handler
+
 	fmt.Println("Starting the server on :3000...")
-	http.ListenAndServe("localhost:3000", router)
+	// http.HandlerFunc is a type conversion,  NOT a funciton call
+	http.ListenAndServe("localhost:3000", http.HandlerFunc(pathHandler))
 }
