@@ -20,9 +20,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Pass in the http.ResponseWriter as the place to write the template
-	err = tpl.Execute(w, nil)
+	// "a string" simulates a struct with no fields, and our template is looking for a Name field
+	err = tpl.Execute(w, "a string")
 	if err != nil {
-		panic(err) // TODO: remove the panic
+		log.Printf("executing the template: %v", err)
+		// This doesn't actually work to set an error, because when the template executes it starts
+		// rendering things (and sets the response to 200 which can't be changed).  We see valid data
+		// and then an error on the resulting page, not a dedicated error page.  This is expected.
+		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
+		return
 	}
 }
 
