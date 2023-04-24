@@ -3,16 +3,21 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tpl, err := template.ParseFiles("templates/home.gohtml")
+	tplPath := filepath.Join("templates", "home.gohtml") // makes the path os-agnostic
+	tpl, err := template.ParseFiles(tplPath)
 	if err != nil {
-		panic(err) // TODO: remove the panic
+		log.Printf("parsing the template: %v", err)
+		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
+		return
 	}
 	// Pass in the http.ResponseWriter as the place to write the template
 	err = tpl.Execute(w, nil)
