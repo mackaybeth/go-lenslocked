@@ -2,16 +2,23 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	bio := `<script>alert("Haha, you have been h4x0r3d!");</script>`
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<h1>Welcome to my awesome site!</h1><p>Bio: "+bio+"</p>")
+	tpl, err := template.ParseFiles("templates/home.gohtml")
+	if err != nil {
+		panic(err) // TODO: remove the panic
+	}
+	// Pass in the http.ResponseWriter as the place to write the template
+	err = tpl.Execute(w, nil)
+	if err != nil {
+		panic(err) // TODO: remove the panic
+	}
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
