@@ -20,8 +20,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Pass in the http.ResponseWriter as the place to write the template
-	// "a string" simulates a struct with no fields, and our template is looking for a Name field
-	err = tpl.Execute(w, "a string")
+	err = tpl.Execute(w, nil)
 	if err != nil {
 		log.Printf("executing the template: %v", err)
 		// This doesn't actually work to set an error, because when the template executes it starts
