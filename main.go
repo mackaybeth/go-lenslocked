@@ -12,7 +12,7 @@ import (
 
 func executeTemplate(w http.ResponseWriter, filepath string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tpl, err := template.ParseFiles(filePath)
+	tpl, err := template.ParseFiles(filepath)
 	if err != nil {
 		log.Printf("parsing the template: %v", err)
 		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
@@ -41,15 +41,8 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `<h1>Frequently Asked Questions</h1>
-	<h2>Q: Is there a free version?</h2>
-	<p><b>A:</b> Yes! We offer a free trial for 30 days</p>
-	<h2>Q: What are your support hours?</h2>
-	<p><b>A:</b> 24/7 email support, slower on weekends</p>
-	<h2>Q: How do Io contact support?</h2>
-	<p><b>A:</b> email <a href="mailto:support@email.com">support@email.com</a></p>
-	`)
+	tplPath := filepath.Join("templates", "faq.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
