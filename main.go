@@ -20,6 +20,10 @@ func main() {
 
 	tpl, err := views.Parse(filepath.Join("templates", "home.gohtml"))
 	if err != nil {
+		// Panic reserved for special occasions that should never happen,
+		// and should not be in functions that can be called, because it's
+		// not clear what happens when something goes wrong.  Funcitons should
+		// return errors
 		panic(err)
 	}
 	r.Get("/", controllers.StaticHandler(tpl))

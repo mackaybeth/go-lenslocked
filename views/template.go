@@ -7,6 +7,15 @@ import (
 	"net/http"
 )
 
+// Helper function used for templates, to wrap the panic
+// Major benefit is to reduce copypasta in main
+func Must(t Template, err error) Template {
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
 func Parse(filepath string) (Template, error) {
 	tpl, err := template.ParseFiles(filepath)
 	if err != nil {
