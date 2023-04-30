@@ -36,7 +36,7 @@ func main() {
 	}
 	r.Get("/faq", controllers.StaticHandler(faqTpl))
 
-	ßr.NotFound(func(w http.ResponseWriter, r *http.Request) {
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
 	})
 	fmt.Println("Starting the server on :3000...")
