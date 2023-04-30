@@ -2,32 +2,41 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/mackaybeth/lenslocked/views"
 )
 
 func executeTemplate(w http.ResponseWriter, filepath string) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tpl, err := template.ParseFiles(filepath)
+	// tpl, err := template.ParseFiles(filepath)
+	// if err != nil {
+	// 	log.Printf("parsing the template: %v", err)
+	// 	http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
+	// 	return
+	// }
+	// // 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	// 	// Pass in the http.ResponseWriter as the place to write the template
+	// 	err = tpl.Execute(w, nil)
+	// 	if err != nil {
+	// 		log.Printf("executing the template: %v", err)
+	// 		// This doesn't actually work to set an error, because when the template executes it starts
+	// 		// rendering things (and sets the response to 200 which can't be changed).  We see valid data
+	// 		// and then an error on the resulting page, not a dedicated error page.  This is expected.
+	// 		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
+	// 		return
+	// 	}
+
+	t, err := views.Parse(filepath)
 	if err != nil {
 		log.Printf("parsing the template: %v", err)
 		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
 		return
 	}
-	// Pass in the http.ResponseWriter as the place to write the template
-	err = tpl.Execute(w, nil)
-	if err != nil {
-		log.Printf("executing the template: %v", err)
-		// This doesn't actually work to set an error, because when the template executes it starts
-		// rendering things (and sets the response to 200 which can't be changed).  We see valid data
-		// and then an error on the resulting page, not a dedicated error page.  This is expected.
-		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
-		return
-	}
+
+	t.Execute(w, nil)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
