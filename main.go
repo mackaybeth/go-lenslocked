@@ -18,26 +18,13 @@ func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 
-	tpl, err := views.Parse(filepath.Join("templates", "home.gohtml"))
-	if err != nil {
-		// Panic reserved for special occasions that should never happen,
-		// and should not be in functions that can be called, because it's
-		// not clear what happens when something goes wrong.  Funcitons should
-		// return errors
-		panic(err)
-	}
+	tpl := views.Must(views.Parse(filepath.Join("templates", "home.gohtml")))
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	contactTpl, err := views.Parse(filepath.Join("templates", "contact.gohtml"))
-	if err != nil {
-		panic(err)
-	}
+	contactTpl := views.Must(views.Parse(filepath.Join("templates", "contact.gohtml")))
 	r.Get("/contact", controllers.StaticHandler(contactTpl))
 
-	faqTpl, err := views.Parse(filepath.Join("templates", "faq.gohtml"))
-	if err != nil {
-		panic(err)
-	}
+	faqTpl := views.Must(views.Parse(filepath.Join("templates", "faq.gohtml")))
 	r.Get("/faq", controllers.StaticHandler(faqTpl))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
