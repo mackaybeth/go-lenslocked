@@ -18,13 +18,13 @@ func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 
-	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml"))
+	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "layout-parts.gohtml"))
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	contactTpl := views.Must(views.ParseFS(templates.FS, "contact.gohtml"))
+	contactTpl := views.Must(views.ParseFS(templates.FS, "contact.gohtml", "layout-parts.gohtml"))
 	r.Get("/contact", controllers.StaticHandler(contactTpl))
 
-	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml"))
+	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "layout-parts.gohtml"))
 	r.Get("/faq", controllers.FAQ(faqTpl))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
