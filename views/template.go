@@ -21,8 +21,11 @@ func Must(t Template, err error) Template {
 	return t
 }
 
-func ParseFS(fs fs.FS, pattern string) (Template, error) {
-	tpl, err := template.ParseFS(fs, pattern)
+func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
+
+	// Need to add the 3 dots after the input patterns (even though both take in
+	// variadic string) to tell template.ParseFS to treat this slice as a variadic string
+	tpl, err := template.ParseFS(fs, patterns...)
 	if err != nil {
 		return Template{}, fmt.Errorf("parseFS template: %w", err)
 	}
