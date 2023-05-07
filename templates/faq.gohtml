@@ -1,31 +1,25 @@
 {{template "header" .}}
-<h1>Frequently Asked Questions</h1>
-<ul>
-    {{range .}}
-        {{template "faq-q-and-a" .}}
-    {{end}}
+<div class="px-6">
+    <h1 class="py-4 text-4xl semibold tracking-tight">Frequently Asked Questions</h1>
+    <ul class="grid grid-cols-2 gap-16">
+        {{range .}}
+            {{template "faq-q-and-a" .}}
+        {{end}}
+    </ul>
+</div>
 
-    <h2>END OF TEMPLATE</h2>
-    <li><b>Is there a free version</b>Yes! We offer a free trial for 30 days on any paid plans.</li>
-    <li><b>What are your support hours?</b>We have support staff answering emails 24/7, though response times may be a bit slower on weekends.</li>
-    <li><b>How do I contact support?</b>email <a href="mailto:support@email.com">support@email.com</a></li>
-</ul>
-
-
-
-<h2>Q: Is there a free version?</h2>
-<p>
-    <b>A:</b> Yes! We offer a free trial for 30 days
-</p>
-<h2>Q: What are your support hours?</h2>
-<p><b>A:</b> 24/7 email support, slower on weekends</p>
-<h2>Q: How do Io contact support?</h2>
-<p><b>A:</b> email <a href="mailto:support@email.com">support@email.com</a></p>
 {{template "footer" .}}
 
 
+<!--     
+<a class="px-4 py-2 bg-indigo-600 hover:bg-indigo-800 text-white rounded" href="/signup">Sign up</a> 
+-->
+
 {{define "faq-q-and-a"}}
-<li><b>{{.Question}}</b> {{.Answer}}</li>
+<li class="border-t border-indigo-400 py-1 px-2">
+    <span class="block text-lg text-gray-800 semibold">{{.Question}}</span> 
+    <span class="block text-sm text-gray-500">{{.Answer}}</span>
+</li>
 {{end}}
 
 
