@@ -18,10 +18,11 @@ func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 
-	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "layout-parts.gohtml"))
+	// layout-page must be first because the page template wraps everything in home.gohtml
+	tpl := views.Must(views.ParseFS(templates.FS, "layout-page.gohtml", "home.gohtml"))
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	contactTpl := views.Must(views.ParseFS(templates.FS, "contact.gohtml", "layout-parts.gohtml"))
+	contactTpl := views.Must(views.ParseFS(templates.FS, "layout-page.gohtml", "contact.gohtml"))
 	r.Get("/contact", controllers.StaticHandler(contactTpl))
 
 	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "layout-parts.gohtml"))
