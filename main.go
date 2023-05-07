@@ -19,13 +19,13 @@ func main() {
 	r := chi.NewRouter()
 
 	// layout-page must be first because the page template wraps everything in home.gohtml
-	tpl := views.Must(views.ParseFS(templates.FS, "layout-page.gohtml", "home.gohtml"))
+	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	contactTpl := views.Must(views.ParseFS(templates.FS, "layout-page.gohtml", "contact.gohtml"))
+	contactTpl := views.Must(views.ParseFS(templates.FS, "contact.gohtml", "tailwind.gohtml"))
 	r.Get("/contact", controllers.StaticHandler(contactTpl))
 
-	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "layout-parts.gohtml"))
+	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
 	r.Get("/faq", controllers.FAQ(faqTpl))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

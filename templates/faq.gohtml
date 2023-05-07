@@ -1,3 +1,4 @@
+{{template "header" .}}
 <h1>Frequently Asked Questions</h1>
 <ul>
     {{range .}}
@@ -20,10 +21,12 @@
 <p><b>A:</b> 24/7 email support, slower on weekends</p>
 <h2>Q: How do Io contact support?</h2>
 <p><b>A:</b> email <a href="mailto:support@email.com">support@email.com</a></p>
+{{template "footer" .}}
 
-<pre>{{.}}</pre>
 
 {{define "faq-q-and-a"}}
 <li><b>{{.Question}}</b> {{.Answer}}</li>
 {{end}}
+
+
 
