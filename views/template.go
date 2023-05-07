@@ -3,9 +3,14 @@ package views
 import (
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 )
+
+type Template struct {
+	htmlTpl *template.Template
+}
 
 // Helper function used for templates, to wrap the panic
 // Major benefit is to reduce copypasta in main
@@ -14,6 +19,17 @@ func Must(t Template, err error) Template {
 		panic(err)
 	}
 	return t
+}
+
+func ParseFS(fs fs.FS, pattern string) (Template, error) {
+	tpl, err := template.ParseFS(fs, pattern)
+	if err != nil {
+		return Template{}, fmt.Errorf("parseFS template: %w", err)
+	}
+	return Template{
+		htmlTpl: tpl,
+	}, nil
+
 }
 
 func Parse(filepath string) (Template, error) {
@@ -26,10 +42,6 @@ func Parse(filepath string) (Template, error) {
 	return Template{
 		htmlTpl: tpl,
 	}, nil
-}
-
-type Template struct {
-	htmlTpl *template.Template
 }
 
 func (t Template) Execute(w http.ResponseWriter, data interface{}) {
