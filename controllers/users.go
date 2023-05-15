@@ -12,8 +12,13 @@ type Users struct {
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
-	// we need a view to render
-	u.Templates.New.Execute(w, nil)
+
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+
+	u.Templates.New.Execute(w, data)
 }
 
 // Parsing the values from the form using helper methosds in ther request
