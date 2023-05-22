@@ -1,36 +1,23 @@
 package main
 
 import (
-	"html/template"
-	"os"
+	"database/sql"
+	"fmt"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-type User struct {
-	Name string
-	Bio  string
-	Age  int
-}
-
 func main() {
-
-	// Filepath is relative to where you're running
-	t, err := template.ParseFiles("hello.gohtml")
+	// pass in driver and conenction string
+	// port matches what's in my docker compose file for the "port on my computer"
+	db, err := sql.Open("pgx", "host=localhost port=5433 user=baloo password=junglebook dbname=lenslocked sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
-
-	// Defining like this is an anonymous struct, declared inline.
-	// Second set of curly braces is instantiating the struct
-	user := User{
-		Name: "Jon Calhoun",
-		Bio:  `<script>alert("Haha, you have been h4x0r3d!");</script>`,
-		Age:  123,
-	}
-
-	// Execute is how you process a template
-	err = t.Execute(os.Stdout, user)
+	defer db.Close()
+	err = db.Ping()
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Println("Connected!")
 }
