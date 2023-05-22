@@ -1,0 +1,7 @@
+NOTES
+
+connect to postgres w psql
+> docker ps, get name of container (in this case go-lenslocked-db-1)
+> docker exec -it go-lenslocked-db-1 /usr/bin/psql -U baloo -d lenslocked
+
+
