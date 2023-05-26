@@ -1,40 +1,15 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/mackaybeth/lenslocked/models"
 )
 
-type PostgresConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DbName   string
-	SSLMode  string
-}
-
-func (cfg PostgresConfig) String() string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DbName, cfg.SSLMode)
-}
-
 func main() {
 
-	cfg := PostgresConfig{
-		Host:     "localhost",
-		Port:     "5433",
-		User:     "baloo",
-		Password: "junglebook",
-		DbName:   "lenslocked",
-		SSLMode:  "disable",
-	}
-
-	// pass in driver and conenction string
-	// port matches what's in my docker compose file for the "port on my computer"
-	db, err := sql.Open("pgx", cfg.String())
+	cfg := models.DefaultPostgresConfig()
+	db, err := models.Open(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +41,7 @@ func main() {
 	us := models.UserService{
 		DB: db,
 	}
-	user, err := us.Create("bob@bob.com", "bob123")
+	user, err := us.Create("bob2@bob.com", "bob1232")
 	if err != nil {
 		panic(err)
 	}
