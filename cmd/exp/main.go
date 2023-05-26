@@ -62,19 +62,37 @@ func main() {
 	}
 	fmt.Println("Tables created.")
 
-	name := "New User"
-	email := "new@calhoun.io"
-	row := db.QueryRow(`
-	INSERT INTO users(name, email)
-	VALUES($1, $2) RETURNING id;`, name, email)
+	// name := "New User"
+	// email := "new@calhoun.io"
+	// // Using QueryRow instead of Exec because we're expecting a return value
+	// row := db.QueryRow(`
+	// INSERT INTO users(name, email)
+	// VALUES($1, $2) RETURNING id;`, name, email)
 
-	// Could call row.Err != nill here first, but if there is an error with the row, it will be returned with row.Scan.  So if using row.Scan, extra row.Err check isn't needed.
-	// row.Scan gets the RETURNING value (could have multiple RETURNING, order matters for row.Scan)
-	var id int
-	err = row.Scan(&id)
+	// // Could call row.Err != nill here first, but if there is an error with the row, it will be returned with row.Scan.  So if using row.Scan, extra row.Err check isn't needed.
+	// // row.Scan gets the RETURNING value (could have multiple RETURNING, order matters for row.Scan)
+	// var id int
+	// err = row.Scan(&id)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("User created. id =", id)
+
+	id := 5
+	row := db.QueryRow(`
+		SELECT name, email
+		FROM users
+		WHERE id=$1;`, id)
+	var name, email string
+	err = row.Scan(&name, &email)
+
+	// QueryRow expects at least one row back and returns the first.  If there are no rows, it returns an error so we can check for that
+	if err == sql.ErrNoRows {
+		fmt.Println("Error, no rows!")
+	}
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("User created. id =", id)
+	fmt.Printf("User information: name=%s, email=%s\n", name, email)
 
 }
