@@ -5,3 +5,21 @@ connect to postgres w psql
 > docker exec -it go-lenslocked-db-1 /usr/bin/psql -U baloo -d lenslocked
 
 
+Post sec 12
+To run the website:
+docker exec -it go-lenslocked-db-1 /usr/bin/psql -U baloo -d lenslocked
+
+Then make the table:
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL
+);
+
+
+Then add users
+jon@calhoun.io joncalhoun
+bob@bob.io bob123
+fake@calhoun.io fake123
+
