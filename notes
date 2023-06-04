@@ -20,8 +20,13 @@ CREATE TABLE users (
 );
 
 
-Then add users by running go run cmd/exp/exp.go (makes these users):
+Then add users by running go run cmd/exp/users.go (makes these users):
 jon@calhoun.io joncalhoun
 bob@bob.io bob123
 fake@calhoun.io fake123
+
+
+For Sec12-Viewing Cookies With Chrome, there is no "see all cookies and site data".
+The equivalent option is "see all site data and permissions"
+
 
