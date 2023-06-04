@@ -41,7 +41,19 @@ func main() {
 	us := models.UserService{
 		DB: db,
 	}
-	user, err := us.Create("bob2@bob.com", "bob1232")
+	user, err := us.Create("jon@calhoun.io", "joncalhoun")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(user)
+
+	user, err = us.Create("bob@bob.com", "bob123")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(user)
+
+	user, err = us.Create("fake@calhoun.com", "fake123")
 	if err != nil {
 		panic(err)
 	}

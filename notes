@@ -7,6 +7,8 @@ connect to postgres w psql
 
 Post sec 12
 To run the website:
+start docker desktop
+docker compose up -d
 docker exec -it go-lenslocked-db-1 /usr/bin/psql -U baloo -d lenslocked
 
 Then make the table:
@@ -18,7 +20,7 @@ CREATE TABLE users (
 );
 
 
-Then add users
+Then add users by running go run cmd/exp/exp.go (makes these users):
 jon@calhoun.io joncalhoun
 bob@bob.io bob123
 fake@calhoun.io fake123
