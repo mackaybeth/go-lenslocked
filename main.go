@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/csrf"
 	"github.com/mackaybeth/lenslocked/controllers"
 	"github.com/mackaybeth/lenslocked/models"
 	"github.com/mackaybeth/lenslocked/templates"
@@ -62,6 +63,9 @@ func main() {
 		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
 	})
 	fmt.Println("Starting the server on :3000...")
-	// http.HandlerFunc is a type conversion,  NOT a funciton call
-	http.ListenAndServe("localhost:3000", r)
+	var csrfKey = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX" // 32-byte key
+	csrfMidlewareFunc := csrf.Protect(
+		[]byte(csrfKey),
+		csrf.Secure(false)) // TODO Fix this before deploy
+	http.ListenAndServe("localhost:3000", csrfMidlewareFunc(r))
 }
