@@ -27,7 +27,10 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 		template.FuncMap{
 			// Name of the function : type returnval
 			"csrfField": func() template.HTML {
-				return `<input type="hidden" />`
+				// This is a placeholder, we want to use csrf.TemplateFunc but
+				// requests are not available.  This allows us to put in the placeholder
+				// and later update the template to replace the csrfField function
+				return `<!-- TODO: Implement the csrfField func -->`
 			},
 		},
 	)
@@ -56,10 +59,13 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 // 	}, nil
 // }
 
-func (t Template) Execute(w http.ResponseWriter, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// Pass in the http.ResponseWriter as the place to write the template
 	err := t.htmlTpl.Execute(w, data)
+
+	// update the functions specific to the request
+	//t.htmlTpl.Funcs()
 	if err != nil {
 		log.Printf("executing the template: %v", err)
 		// This doesn't actually work to set an error, because when the template executes it starts
