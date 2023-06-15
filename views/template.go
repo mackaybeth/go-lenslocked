@@ -1,8 +1,10 @@
 package views
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -28,11 +30,8 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			// Name of the function : type returnval
-			"csrfField": func() template.HTML {
-				// This is a placeholder, we want to use csrf.TemplateField but
-				// requests are not available here.  This allows us to put in the placeholder
-				// and later update the template to replace the csrfField function
-				return `<!-- TODO: Implement the csrfField func -->`
+			"csrfField": func() (template.HTML, error) {
+				return "", fmt.Errorf("csrfField not implemented, add code to Execute to implement")
 			},
 		},
 	)
@@ -83,11 +82,13 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 	)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	// Pass in the http.ResponseWriter as the place to write the template
-	err = tpl.Execute(w, data)
+	var buf bytes.Buffer
+
+	// Pass in the bytes.Buffer as the place to write the template, in case
+	// there is an error
+	err = tpl.Execute(&buf, data)
 
 	// update the functions specific to the request
-	//t.htmlTpl.Funcs()
 	if err != nil {
 		log.Printf("executing the template: %v", err)
 		// This doesn't actually work to set an error, because when the template executes it starts
@@ -96,4 +97,7 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
 		return
 	}
+	// We got this far, so no error.  Now we can copy from the buffer to the
+	// http.ResponseWriter
+	io.Copy(w, &buf)
 }
