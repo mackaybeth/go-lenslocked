@@ -15,8 +15,15 @@
                 <a class = "text-lg font-semibold hover:text-blue-100 pr-8" href="/faq">FAQ</a>
                 <a class = "text-lg font-semibold hover:text-blue-100 pr-8" href="/">Home</a>
             </div>
-            <div>
-                <a class = "pr-4" href="/signin">Sign In</a>
+            <div class="space-x-4">
+                <!--we are using an HTML form to perform a POST request for signout because browsers don’t support DELETE well, and POST requires a form. When we use an <a> link, these always result in a GET request. Because we need to use a form, it is important to remember to include the {{csrfField}}, otherwise our form won’t work. -->
+                <form action="/signout" method="post" class="inline pr-4">
+                    <div class="hidden">
+                        {{csrfField}}
+                    </div>
+                    <button type="submit">Sign out</button>
+                </form>
+                <a href="/signin">Sign In</a>
                 <a class="px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded" href="/signup">Sign Up</a>
             </div>
         </nav>
