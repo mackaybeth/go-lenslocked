@@ -1,10 +1,15 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/mackaybeth/lenslocked/rand"
+)
 
 type Session struct {
 	ID     int
-	UserId int
+	UserID int
 	// Token is only set when creating a new session.
 	// When looking up a session, this will be left empty as we only
 	// store the hash of a session token on our databases and we cannot
@@ -17,9 +22,18 @@ type SessionService struct {
 }
 
 func (ss *SessionService) Create(userID int) (*Session, error) {
-	// TODO: create the session token
-	// TODO: implement SessionService.Create
-	return nil, nil
+	token, err := rand.SessionToken()
+	if err != nil {
+		return nil, fmt.Errorf("create: %w", err)
+	}
+	// TODO: Hash the session token
+	session := Session{
+		UserID: userID,
+		Token:  token,
+		// TODO: Set the TokenHash
+	}
+	// TODO: Store the session in our DB
+	return &session, nil
 }
 
 func (ss *SessionService) User(token string) (*User, error) {

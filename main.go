@@ -41,8 +41,13 @@ func main() {
 		DB: db,
 	}
 
+	sessionService := models.SessionService{
+		DB: db,
+	}
+
 	usersC := controllers.Users{
-		UserService: &userService, // takes a pointer
+		UserService:    &userService, // takes a pointer
+		SessionService: &sessionService,
 	}
 	usersC.Templates.New = views.Must(views.ParseFS(
 		templates.FS,
