@@ -1,7 +1,9 @@
 package models
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/mackaybeth/lenslocked/rand"
@@ -42,9 +44,9 @@ func (ss *SessionService) Create(userID int) (*Session, error) {
 	}
 	// TODO: Hash the session token
 	session := Session{
-		UserID: userID,
-		Token:  token,
-		// TODO: Set the TokenHash
+		UserID:    userID,
+		Token:     token,
+		TokenHash: ss.hash(token),
 	}
 	// TODO: Store the session in our DB
 	return &session, nil
@@ -53,4 +55,13 @@ func (ss *SessionService) Create(userID int) (*Session, error) {
 func (ss *SessionService) User(token string) (*User, error) {
 	// TODO: implement SessionService.User
 	return nil, nil
+}
+
+func (ss *SessionService) hash(token string) string {
+	tokenHash := sha256.Sum256([]byte(token))
+	// base64 encode the data into a string
+	// accesing tokenhash[:] because Sum256 returns a fixed-size byte array,
+	// and this syntax tells Go that we want to create a byte slice using all of the data in the byte array.
+	// It is shorthand for tokenHash[0:len(tokenHash)]
+	return base64.URLEncoding.EncodeToString(tokenHash[:])
 }
