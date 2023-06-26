@@ -104,3 +104,15 @@ func (ss *SessionService) hash(token string) string {
 	// It is shorthand for tokenHash[0:len(tokenHash)]
 	return base64.URLEncoding.EncodeToString(tokenHash[:])
 }
+
+func (ss *SessionService) Delete(token string) error {
+	tokenHash := ss.hash(token)
+	// We are using Exec instead of QueryRow here because we don't care about data returned by the DB
+	_, err := ss.DB.Exec(`
+		DELETE FROM sessions
+		WHERE token_hash = $1;`, tokenHash)
+	if err != nil {
+		return fmt.Errorf("delete: %w", err)
+	}
+	return nil
+}
