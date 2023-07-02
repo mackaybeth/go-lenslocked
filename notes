@@ -16,10 +16,13 @@ Then make the sessions table (copy from models/sql/sessions.sql)
 
 
 
-Then add users by running go run cmd/add-users/add-users.go (makes these users):
+Then add users by running go run cmd/add-users/add-users.go (makes the first 3 users):
 jon@calhoun.io joncalhoun
 bob@bob.io bob123
 fake@calhoun.io fake123
+jac@jill.com jack1234
+demo@example.com demo
+
 
 
 For Sec12-Viewing Cookies With Chrome, there is no "see all cookies and site data".
