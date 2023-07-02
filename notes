@@ -5,22 +5,18 @@ connect to postgres w psql
 > docker exec -it go-lenslocked-db-1 /usr/bin/psql -U baloo -d lenslocked
 
 
-Post sec 12
+Post sec 12 
 To run the website:
 start docker desktop
 cd joncalhoun/go-lenslocked; docker compose up -d
 docker exec -it go-lenslocked-db-1 /usr/bin/psql -U baloo -d lenslocked
 
-Then make the table:
-
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL
-);
+Then make the users table (copy from models/sql/users.sql)
+Then make the sessions table (copy from models/sql/sessions.sql)
 
 
-Then add users by running go run cmd/exp/add-users.go (makes these users):
+
+Then add users by running go run cmd/add-users/add-users.go (makes these users):
 jon@calhoun.io joncalhoun
 bob@bob.io bob123
 fake@calhoun.io fake123
