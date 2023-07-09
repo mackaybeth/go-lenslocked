@@ -31,6 +31,10 @@ func main() {
 	r.Get("/faq", controllers.FAQ(faqTpl))
 
 	cfg := models.DefaultPostgresConfig()
+
+	// Print out the config for the DB so we can use DB migrations
+	fmt.Println(cfg.String())
+
 	db, err := models.Open(cfg)
 	if err != nil {
 		panic(err)
