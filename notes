@@ -37,3 +37,10 @@ SSL/TLS certificates:
 - Let's Encrypt
 - Caddy
 
+
+pressly/goose - we installed it but I can't find it.  Looked at the README in github, it's installed in $GOPATH/bin.  I don't have $GOPATH defined, but by default it is ~/go.  I found goose in ~/go/bin/goose.
+
+ ~/go/bin/goose postgres \
+  "host=localhost port=5433 user=baloo password=junglebook dbname=lenslocked sslmode=disable" \
+  status
+
