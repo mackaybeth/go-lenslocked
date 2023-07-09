@@ -1,24 +1,38 @@
 package main
 
 import (
+	// TODO: Explain the stdctx rename here since we have two
+	// context packages being imported
+	stdctx "context"
 	"fmt"
 
+	"github.com/mackaybeth/lenslocked/context"
 	"github.com/mackaybeth/lenslocked/models"
 )
 
 func main() {
 
-	cfg := models.DefaultPostgresConfig()
-	db, err := models.Open(cfg)
-	if err != nil {
-		panic(err)
+	ctx := stdctx.Background()
+
+	user := models.User{
+		Email: "jon@calhoun.io",
 	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Connected!")
+	ctx = context.WithUser(ctx, &user)
+
+	retrievedUser := context.User(ctx)
+	fmt.Println(retrievedUser.Email)
+
+	// cfg := models.DefaultPostgresConfig()
+	// db, err := models.Open(cfg)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer db.Close()
+	// err = db.Ping()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("Connected!")
 
 	// _, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
 	// 	id SERIAL PRIMARY KEY,
@@ -38,26 +52,26 @@ func main() {
 	// }
 	// fmt.Println("Tables created.")
 
-	us := models.UserService{
-		DB: db,
-	}
-	user, err := us.Create("jon@calhoun.io", "joncalhoun")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(user)
+	// us := models.UserService{
+	// 	DB: db,
+	// }
+	// user, err := us.Create("jon@calhoun.io", "joncalhoun")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(user)
 
-	user, err = us.Create("bob@bob.com", "bob123")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(user)
+	// user, err = us.Create("bob@bob.com", "bob123")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(user)
 
-	user, err = us.Create("fake@calhoun.com", "fake123")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(user)
+	// user, err = us.Create("fake@calhoun.com", "fake123")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(user)
 
 	// name := "New User"
 	// email := "new@calhoun.io"
