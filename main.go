@@ -75,6 +75,10 @@ func main() {
 
 	r := chi.NewRouter()
 
+	//  Make the router use the middlewre
+	r.Use(csrfMw)
+	r.Use(usrMw.SetUser)
+
 	// layout-page must be first because the page template wraps everything in home.gohtml
 	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
 	r.Get("/", controllers.StaticHandler(tpl))
@@ -89,9 +93,18 @@ func main() {
 	r.Post("/users", usersC.Create)
 	r.Get("/signin", usersC.SignIn)
 	r.Post("/signin", usersC.ProcessSignIn)
-	r.Get("/users/me", usersC.CurrentUser)
 	// Annoying to create links and forms that peform DELETE without JS, so we're using POST
 	r.Post("/signout", usersC.ProcessSignOut)
+
+	// Can use subroute "Route" here because we know that this prefix means that user needs to be logged in
+	r.Route("/users/me", func(r chi.Router) {
+		// This MW is used by pages under the /users/me prefix
+		r.Use(usrMw.RequireUser)
+		r.Get("/", usersC.CurrentUser)
+		r.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, "howdy")
+		})
+	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
@@ -100,8 +113,6 @@ func main() {
 	// START THE SERVER
 	fmt.Println("Starting the server on :3000...")
 
-	// Note on the nested MW calls around r:  usrMw returns a new request, then the result of that is passed into csrfMw which returns another new request
-	// Ordering is important.  csrfMw is first, then usrMw is next, then that wrapped result is sent into ListenAndServe
-	http.ListenAndServe("localhost:3000", csrfMw(usrMw.SetUser(r)))
+	http.ListenAndServe("localhost:3000", r)
 
 }

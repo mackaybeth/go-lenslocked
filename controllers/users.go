@@ -98,27 +98,9 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 
 	// This is from the context package that we wrote
 	user := context.User(ctx)
-	if user == nil {
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
+	// Do not need to check for nil here because there is middleware in main.go that requires the user to be logged in before they get to this page
+
 	fmt.Fprintf(w, "Current user %s\n", user.Email)
-
-	// token, err := readCookie(r, CookieSession)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	http.Redirect(w, r, "/signin", http.StatusFound)
-	// 	return
-	// }
-	// user, err := u.SessionService.User(token)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	http.Redirect(w, r, "/signin", http.StatusFound)
-	// 	return
-	// }
-
-	// fmt.Fprintf(w, "Current user %s\n", user.Email)
-	// fmt.Fprintf(w, "Headers: %+v\n", r.Header)
 }
 
 func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
