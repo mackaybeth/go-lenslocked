@@ -19,18 +19,8 @@ func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	r := chi.NewRouter()
 
-	// layout-page must be first because the page template wraps everything in home.gohtml
-	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
-	r.Get("/", controllers.StaticHandler(tpl))
-
-	contactTpl := views.Must(views.ParseFS(templates.FS, "contact.gohtml", "tailwind.gohtml"))
-	r.Get("/contact", controllers.StaticHandler(contactTpl))
-
-	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
-	r.Get("/faq", controllers.FAQ(faqTpl))
-
+	// SETUP THE DATABASE
 	cfg := models.DefaultPostgresConfig()
 
 	// Print out the config for the DB so we can use DB migrations
@@ -47,6 +37,8 @@ func main() {
 		panic(err)
 	}
 
+	// SETUP SERVICES
+
 	userService := models.UserService{
 		DB: db,
 	}
@@ -55,6 +47,17 @@ func main() {
 		DB: db,
 	}
 
+	// SETUP MIDDLEWARE
+	usrMw := controllers.UserMiddleware{
+		SessionService: &sessionService,
+	}
+
+	var csrfKey = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX" // 32-byte key
+	csrfMw := csrf.Protect(
+		[]byte(csrfKey),
+		csrf.Secure(false)) // TODO Fix this before deploy
+
+	// SETUP CONTROLLERS
 	usersC := controllers.Users{
 		UserService:    &userService, // takes a pointer
 		SessionService: &sessionService,
@@ -68,6 +71,20 @@ func main() {
 		"signin.gohtml", "tailwind.gohtml",
 	))
 
+	// SETUP ROUTER AND ROUTES
+
+	r := chi.NewRouter()
+
+	// layout-page must be first because the page template wraps everything in home.gohtml
+	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
+	r.Get("/", controllers.StaticHandler(tpl))
+
+	contactTpl := views.Must(views.ParseFS(templates.FS, "contact.gohtml", "tailwind.gohtml"))
+	r.Get("/contact", controllers.StaticHandler(contactTpl))
+
+	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
+	r.Get("/faq", controllers.FAQ(faqTpl))
+
 	r.Get("/signup", usersC.New)
 	r.Post("/users", usersC.Create)
 	r.Get("/signin", usersC.SignIn)
@@ -80,16 +97,7 @@ func main() {
 		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
 	})
 
-	// Create an instance of the user middleware
-	usrMw := controllers.UserMiddleware{
-		SessionService: &sessionService,
-	}
-
-	var csrfKey = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX" // 32-byte key
-	csrfMw := csrf.Protect(
-		[]byte(csrfKey),
-		csrf.Secure(false)) // TODO Fix this before deploy
-
+	// START THE SERVER
 	fmt.Println("Starting the server on :3000...")
 
 	// Note on the nested MW calls around r:  usrMw returns a new request, then the result of that is passed into csrfMw which returns another new request

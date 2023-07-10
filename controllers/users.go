@@ -143,7 +143,6 @@ type UserMiddleware struct {
 
 func (umw UserMiddleware) SetUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Add logic for the SetUser middleware, then eventually call next.ServeHTTP(w, r)
 
 		token, err := readCookie(r, CookieSession)
 		if err != nil {
@@ -162,6 +161,19 @@ func (umw UserMiddleware) SetUser(next http.Handler) http.Handler {
 		// This is the context package we wrote
 		ctx = context.WithUser(ctx, user)
 		r = r.WithContext(ctx)
+		next.ServeHTTP(w, r)
+	})
+}
+
+// Assumes the SetUser MW has already been run
+func (umw UserMiddleware) RequireUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := context.User(r.Context())
+		if user == nil {
+			http.Redirect(w, r, "/signin", http.StatusFound)
+			// TODO maybe add alert later
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
 }
