@@ -10,6 +10,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/csrf"
+	"github.com/mackaybeth/lenslocked/context"
+	"github.com/mackaybeth/lenslocked/models"
 )
 
 type Template struct {
@@ -32,6 +34,9 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 			// Name of the function : type returnval
 			"csrfField": func() (template.HTML, error) {
 				return "", fmt.Errorf("csrfField not implemented, add code to Execute to implement")
+			},
+			"currentUser": func() (template.HTML, error) {
+				return "", fmt.Errorf("currentUser not implemented, add code to Execute to implement")
 			},
 		},
 	)
@@ -77,6 +82,9 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 				// This is ovewriting what we parsed originally in ParseFS
 				// (because now we have an http.Request)
 				return csrf.TemplateField(r)
+			},
+			"currentUser": func() *models.User {
+				return context.User(r.Context())
 			},
 		},
 	)
