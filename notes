@@ -44,3 +44,10 @@ pressly/goose - we installed it but I can't find it.  Looked at the README in gi
   "host=localhost port=5433 user=baloo password=junglebook dbname=lenslocked sslmode=disable" \
   status
 
+
+
+  STARTED GETTTING CSRF ERRORS after section 17.  It seems to be a cacheing issue because if I use an incognito window to add users, it works.  But it does not work if I try to add users in the same window as the course.
+  Got caching tip from https://stackoverflow.com/questions/65550461/gorilla-csrf-forbidden-csrf-token-invalid-fails-when-there-are-two-forms 
+
+  
+

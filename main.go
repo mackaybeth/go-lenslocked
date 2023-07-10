@@ -81,9 +81,9 @@ func main() {
 	})
 
 	// Create an instance of the user middleware
-	// usrMw := controllers.UserMiddleware{
-	// 	SessionService: &sessionService,
-	// }
+	usrMw := controllers.UserMiddleware{
+		SessionService: &sessionService,
+	}
 
 	var csrfKey = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX" // 32-byte key
 	csrfMw := csrf.Protect(
@@ -94,7 +94,6 @@ func main() {
 
 	// Note on the nested MW calls around r:  usrMw returns a new request, then the result of that is passed into csrfMw which returns another new request
 	// Ordering is important.  csrfMw is first, then usrMw is next, then that wrapped result is sent into ListenAndServe
-	http.ListenAndServe("localhost:3000", csrfMw(r))
-	//usrMw.SetUser(r)
+	http.ListenAndServe("localhost:3000", csrfMw(usrMw.SetUser(r)))
 
 }
