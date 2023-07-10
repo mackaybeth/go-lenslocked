@@ -20,7 +20,7 @@ Then add users by running go run cmd/add-users/add-users.go (makes the first 3 u
 jon@calhoun.io joncalhoun
 bob@bob.io bob123
 fake@calhoun.io fake123
-jac@jill.com jack1234
+jack@jill.com jack1234
 demo@example.com demo
 
 
