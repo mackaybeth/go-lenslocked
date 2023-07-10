@@ -79,10 +79,22 @@ func main() {
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
 	})
-	fmt.Println("Starting the server on :3000...")
+
+	// Create an instance of the user middleware
+	// usrMw := controllers.UserMiddleware{
+	// 	SessionService: &sessionService,
+	// }
+
 	var csrfKey = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX" // 32-byte key
-	csrfMidlewareFunc := csrf.Protect(
+	csrfMw := csrf.Protect(
 		[]byte(csrfKey),
 		csrf.Secure(false)) // TODO Fix this before deploy
-	http.ListenAndServe("localhost:3000", csrfMidlewareFunc(r))
+
+	fmt.Println("Starting the server on :3000...")
+
+	// Note on the nested MW calls around r:  usrMw returns a new request, then the result of that is passed into csrfMw which returns another new request
+	// Ordering is important.  csrfMw is first, then usrMw is next, then that wrapped result is sent into ListenAndServe
+	http.ListenAndServe("localhost:3000", csrfMw(r))
+	//usrMw.SetUser(r)
+
 }
