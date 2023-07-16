@@ -51,3 +51,18 @@ pressly/goose - we installed it but I can't find it.  Looked at the README in gi
 
   
 
+Mailtrap (see 1Password for login & SMTP info)
+
+Email format:
+----------
+MIME-Version: 1.0
+Date: Sun, 22 Jan 2023 11:54:48 -0500
+To: jon@calhoun.io
+From: test@lenslocked.com
+Subject: This is a test email
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+
+This is the body of the email
+----------
+
