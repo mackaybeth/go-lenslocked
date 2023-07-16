@@ -1,9 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/go-mail/mail/v2"
+)
+
+// All of these values will vary depending on your mail service.
+const (
+	host     = "sandbox.smtp.mailtrap.io"
+	port     = 587
+	username = "da5feb4b8b5f65"
+	password = "9f1778ccdb80cc"
 )
 
 func main() {
@@ -22,6 +31,15 @@ func main() {
 
 	// Takes the contents of the writer and writes them out to stdout
 	msg.WriteTo(os.Stdout)
+
+	dialer := mail.NewDialer(host, port, username, password)
+
+	err := dialer.DialAndSend(msg)
+	if err != nil {
+		// TODO: Handle the error correctly
+		panic(err)
+	}
+	fmt.Println("message sent")
 }
 
 // func main() {
