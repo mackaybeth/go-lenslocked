@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/csrf"
+	"github.com/joho/godotenv"
 	"github.com/mackaybeth/lenslocked/controllers"
 	"github.com/mackaybeth/lenslocked/migrations"
 	"github.com/mackaybeth/lenslocked/models"
@@ -18,15 +21,62 @@ func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Page Not Found</h1><p>Path not supported: "+r.URL.Path)
 }
 
-func main() {
+type config struct {
+	PSQL models.PostgresConfig
+	SMTP models.SMTPConfig
+	CSRF struct {
+		Key    string
+		Secure bool
+	}
+	Server struct {
+		Address string
+	}
+}
 
-	// SETUP THE DATABASE
-	cfg := models.DefaultPostgresConfig()
+func loadEnvConfig() (config, error) {
+	var cfg config
+	err := godotenv.Load()
+	if err != nil {
+		return cfg, err
+	}
+	// TODO: Read the PSQL values from an ENV variable
+	cfg.PSQL = models.DefaultPostgresConfig()
 
 	// Print out the config for the DB so we can use DB migrations
-	fmt.Println(cfg.String())
+	fmt.Println(cfg.PSQL.String())
 
-	db, err := models.Open(cfg)
+	// TODO: SMTP
+	cfg.SMTP.Host = os.Getenv("SMTP_HOST")
+	portStr := os.Getenv("SMTP_PORT")
+	cfg.SMTP.Port, err = strconv.Atoi(portStr)
+	if err != nil {
+		return cfg, err
+	}
+	cfg.SMTP.Username = os.Getenv("SMTP_USERNAME")
+	cfg.SMTP.Password = os.Getenv("SMTP_PASSWORD")
+
+	// TODO: Read the CSRF values from an ENV variable
+	cfg.CSRF.Key = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
+	cfg.CSRF.Secure = false // TODO Fix this before deploy
+
+	// TODO: Read the server values from an ENV variable
+	cfg.Server.Address = ":3000"
+
+	return cfg, nil
+}
+
+func main() {
+
+	// LOAD CONFIG FROM THE ENV
+
+	cfg, err := loadEnvConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	// SETUP THE DATABASE
+
+	db, err := models.Open(cfg.PSQL)
 	if err != nil {
 		panic(err)
 	}
@@ -36,31 +86,37 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close()
 
 	// SETUP SERVICES
 
-	userService := models.UserService{
+	userService := &models.UserService{
 		DB: db,
 	}
-
-	sessionService := models.SessionService{
+	sessionService := &models.SessionService{
 		DB: db,
 	}
+	pwResetService := &models.PasswordResetService{
+		DB: db,
+	}
+	// Don't need the & here because NewEmailService returns a pointer
+	emailService := models.NewEmailService(cfg.SMTP)
 
 	// SETUP MIDDLEWARE
 	usrMw := controllers.UserMiddleware{
-		SessionService: &sessionService,
+		SessionService: sessionService,
 	}
 
-	var csrfKey = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX" // 32-byte key
 	csrfMw := csrf.Protect(
-		[]byte(csrfKey),
-		csrf.Secure(false)) // TODO Fix this before deploy
+		[]byte(cfg.CSRF.Key),
+		csrf.Secure(cfg.CSRF.Secure))
 
 	// SETUP CONTROLLERS
 	usersC := controllers.Users{
-		UserService:    &userService, // takes a pointer
-		SessionService: &sessionService,
+		UserService:          userService,
+		SessionService:       sessionService,
+		PasswordResetService: pwResetService,
+		EmailService:         emailService,
 	}
 	usersC.Templates.New = views.Must(views.ParseFS(
 		templates.FS,
@@ -118,8 +174,8 @@ func main() {
 	})
 
 	// START THE SERVER
-	fmt.Println("Starting the server on :3000...")
+	fmt.Println("Starting the server on %s...", cfg.Server.Address)
 
-	http.ListenAndServe("localhost:3000", r)
+	http.ListenAndServe(cfg.Server.Address, r)
 
 }
