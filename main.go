@@ -70,6 +70,10 @@ func main() {
 		templates.FS,
 		"signin.gohtml", "tailwind.gohtml",
 	))
+	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(
+		templates.FS,
+		"forgot-pw.gohtml", "tailwind.gohtml",
+	))
 
 	// SETUP ROUTER AND ROUTES
 
@@ -95,6 +99,9 @@ func main() {
 	r.Post("/signin", usersC.ProcessSignIn)
 	// Annoying to create links and forms that peform DELETE without JS, so we're using POST
 	r.Post("/signout", usersC.ProcessSignOut)
+
+	r.Get("/forgot-pw", usersC.ForgotPassword)
+	r.Post("/forgot-pw", usersC.ProcessForgotPassword)
 
 	// Can use subroute "Route" here because we know that this prefix means that user needs to be logged in
 	r.Route("/users/me", func(r chi.Router) {
