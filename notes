@@ -54,6 +54,13 @@ pressly/goose - we installed it but I can't find it.  Looked at the README in gi
 Mailtrap (see 1Password for login to service & SMTP server username/password)
 Set env vars in `.env` file, including SMTP server info
 
+To test the reset password, need to reset the PW for a user in the DB already.
+- bob@bob.com reset to bob112233
+- Check the MailTrap account (see 1Password) for the token.  Can't click the link, it goes to lenslocked.com/reset-pw..., just copy the token and paste, and it works!
+
+
+
+
 
 
 
