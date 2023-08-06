@@ -184,7 +184,7 @@ func main() {
 	})
 
 	// START THE SERVER
-	fmt.Println("Starting the server on %s...", cfg.Server.Address)
+	fmt.Println("Starting the server on %w...", cfg.Server.Address)
 
 	http.ListenAndServe(cfg.Server.Address, r)
 
