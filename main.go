@@ -112,7 +112,9 @@ func main() {
 
 	csrfMw := csrf.Protect(
 		[]byte(cfg.CSRF.Key),
-		csrf.Secure(cfg.CSRF.Secure))
+		csrf.Secure(cfg.CSRF.Secure),
+		csrf.Path("/"),
+	)
 
 	// SETUP CONTROLLERS
 	usersC := controllers.Users{
@@ -189,7 +191,13 @@ func main() {
 		})
 	})
 
-	r.Get("/galleries/new", galleriesC.New)
+	// Replace the existing /galleries/new route with the following.
+	r.Route("/galleries", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(usrMw.RequireUser)
+			r.Get("/new", galleriesC.New)
+		})
+	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
