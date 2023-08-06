@@ -38,6 +38,13 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 			"currentUser": func() (template.HTML, error) {
 				return "", fmt.Errorf("currentUser not implemented, add code to Execute to implement")
 			},
+			"errors": func() []string {
+				return []string{
+					"Don't do that!",
+					"The email address you provided is already associated with an account.",
+					"Something went wrong.",
+				}
+			},
 		},
 	)
 
