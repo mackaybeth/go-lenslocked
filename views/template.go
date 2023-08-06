@@ -39,11 +39,7 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 				return "", fmt.Errorf("currentUser not implemented, add code to Execute to implement")
 			},
 			"errors": func() []string {
-				return []string{
-					"Don't do that!",
-					"The email address you provided is already associated with an account.",
-					"Something went wrong.",
-				}
+				return nil
 			},
 		},
 	)
@@ -72,7 +68,7 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 // 	}, nil
 // }
 
-func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}, errs ...error) {
 
 	// t.htmlTpl is a pointer, so we want to clone before using to avoid race conditions
 	// where multiple requests come in at once and all update the same pointer
@@ -92,6 +88,14 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 			},
 			"currentUser": func() *models.User {
 				return context.User(r.Context())
+			},
+			"errors": func() []string {
+				var errorMessages []string
+				for _, err := range errs {
+					// TODO: Don't keep this long term - we will see why in a later lesson
+					errorMessages = append(errorMessages, err.Error())
+				}
+				return errorMessages
 			},
 		},
 	)
