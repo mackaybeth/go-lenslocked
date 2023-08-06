@@ -201,6 +201,7 @@ func main() {
 
 	// Replace the existing /galleries/new route with the following.
 	r.Route("/galleries", func(r chi.Router) {
+		r.Get("/{id}", galleriesC.Show)
 		r.Group(func(r chi.Router) {
 			r.Use(usrMw.RequireUser)
 			r.Get("/", galleriesC.Index)
