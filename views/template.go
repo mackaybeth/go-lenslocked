@@ -2,6 +2,7 @@ package views
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -18,6 +19,11 @@ type Template struct {
 	htmlTpl *template.Template
 }
 
+// We will use this to determine if an error provides the Public method.
+type public interface {
+	Public() string
+}
+
 // Helper function used for templates, to wrap the panic
 // Major benefit is to reduce copypasta in main
 func Must(t Template, err error) Template {
@@ -25,6 +31,20 @@ func Must(t Template, err error) Template {
 		panic(err)
 	}
 	return t
+}
+
+func errMessages(errs ...error) []string {
+	var msgs []string
+	for _, err := range errs {
+		var pubErr public
+		if errors.As(err, &pubErr) {
+			msgs = append(msgs, pubErr.Public())
+		} else {
+			fmt.Println(err)
+			msgs = append(msgs, "Something went wrong.")
+		}
+	}
+	return msgs
 }
 
 func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
@@ -78,6 +98,9 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 		http.Error(w, "There was an error rendering the page.", http.StatusInternalServerError)
 		return
 	}
+	// Call the errMessages func before the closures.
+	errMsgs := errMessages(errs...)
+
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			// Name of the function : type returnval
@@ -90,12 +113,7 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 				return context.User(r.Context())
 			},
 			"errors": func() []string {
-				var errorMessages []string
-				for _, err := range errs {
-					// TODO: Don't keep this long term - we will see why in a later lesson
-					errorMessages = append(errorMessages, err.Error())
-				}
-				return errorMessages
+				return errMsgs
 			},
 		},
 	)
