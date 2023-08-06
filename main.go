@@ -101,6 +101,9 @@ func main() {
 	}
 	// Don't need the & here because NewEmailService returns a pointer
 	emailService := models.NewEmailService(cfg.SMTP)
+	galleryService := &models.GalleryService{
+		DB: db,
+	}
 
 	// SETUP MIDDLEWARE
 	usrMw := controllers.UserMiddleware{
@@ -137,6 +140,13 @@ func main() {
 	usersC.Templates.ResetPassword = views.Must(views.ParseFS(
 		templates.FS,
 		"reset-pw.gohtml", "tailwind.gohtml",
+	))
+	galleriesC := controllers.Galleries{
+		GalleryService: galleryService,
+	}
+	galleriesC.Templates.New = views.Must(views.ParseFS(
+		templates.FS,
+		"galleries/new.gohtml", "tailwind.gohtml",
 	))
 
 	// SETUP ROUTER AND ROUTES
@@ -178,6 +188,8 @@ func main() {
 			fmt.Fprintf(w, "howdy")
 		})
 	})
+
+	r.Get("/galleries/new", galleriesC.New)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound)+": "+r.URL.Path, http.StatusNotFound)
