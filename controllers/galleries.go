@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/mackaybeth/lenslocked/context"
 	"github.com/mackaybeth/lenslocked/errors"
 	"github.com/mackaybeth/lenslocked/models"
