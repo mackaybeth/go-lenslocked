@@ -158,6 +158,10 @@ func main() {
 		templates.FS,
 		"galleries/index.gohtml", "tailwind.gohtml",
 	))
+	galleriesC.Templates.Show = views.Must(views.ParseFS(
+		templates.FS,
+		"galleries/show.gohtml", "tailwind.gohtml",
+	))
 
 	// SETUP ROUTER AND ROUTES
 
