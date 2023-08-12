@@ -1,0 +1,24 @@
+version: "3.9"
+
+# This is our local dev override file
+# Docker uses this file by default with `docker compose up` because it's named `docker-compose.override.yml`
+# Other docker compose override files with other names can be specified on the command line with the -f flag like this:
+# docker compose -f docker-compose.yml -f docker-compose.prod.yml {up,down}
+
+services:
+  # Our Postgres database
+  db: 
+    # We only need to set the values that we want to override from the base docker-compose.yml
+    ports: # Expose ports so that apps not running via docker compose can connect to them.
+      - 5433:5432 # format here is "port on our machine":"port on container"
+      # ^ I already have postgres installed, so the port on our machine needs to be not 5432
+
+  # Adminer provides a nice little web UI to connect to databases
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      ADMINER_DESIGN: dracula # Pick a theme - https://github.com/vrana/adminer/tree/master/designs
+    ports:
+      - 3333:8080
+  
