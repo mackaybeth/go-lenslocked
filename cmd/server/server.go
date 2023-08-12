@@ -78,18 +78,25 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	err = run(cfg)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func run(cfg config) error {
 
 	// SETUP THE DATABASE
 
 	db, err := models.Open(cfg.PSQL)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer db.Close()
 
 	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer db.Close()
 
@@ -221,6 +228,8 @@ func main() {
 		})
 	})
 
+	// http.Dir converts the string into the Dir type, which implements the FileSystem interface
+	// we are "mounting" the assets directory as a FS
 	assetsHandler := http.FileServer(http.Dir("assets"))
 	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
 
@@ -231,6 +240,5 @@ func main() {
 	// START THE SERVER
 	fmt.Println("Starting the server on %w...", cfg.Server.Address)
 
-	http.ListenAndServe(cfg.Server.Address, r)
-
+	return http.ListenAndServe(cfg.Server.Address, r)
 }
