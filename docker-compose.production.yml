@@ -10,10 +10,17 @@ services:
     # Mounting allows the app to make changes to the files in the directory and persist those changes
     volumes:
       - ./images:/app/images
-    # This is for testing purposes
-    # TODO: remove before deploying
-    ports:
-      - 3000:3000
     # This tells what other services need to be up and running first
     depends_on:
       - db
+
+  caddy:
+    image: caddy
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+      # - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      
