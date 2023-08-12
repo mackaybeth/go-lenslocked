@@ -21,4 +21,19 @@ services:
       ADMINER_DESIGN: dracula # Pick a theme - https://github.com/vrana/adminer/tree/master/designs
     ports:
       - 3333:8080
+
+  tailwind:
+    # Building our own image, so using the build tag instead of the image tag (like examples above)
+    build:
+      # Directory where the dockerfile is located
+      context: ./tailwind
+      dockerfile: Dockerfile
+    # Tends to make live reoloading work more reliably
+    tty: true
+    restart: always
+    # mount the volumes we need our_computer:container
+    volumes:
+      - ./tailwind:/src
+      - ./assets:/dst
+      - ./templates:/templates
   
